@@ -1,32 +1,142 @@
 <html>
 <head>
-    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel=stylesheet href="style.css">
 </head>
 <body>
-    <form>
-    <input type=text name="NombreAlimento"><br>
-    <input type=text name="Grasas"><br>
-    <input type=text name="Carbohidratos"><br>
-    <input type=text name="Proteinas"><br>
-    <button type="submit">Agregar</button>
+
+    <div class="dropdown show">
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Dia de la Semana                        
+        </a>
+      
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <a class="dropdown-item" class="LUN" href="#">Lunes</a>
+          <a class="dropdown-item" class="MAR" href="#">Martes</a>
+          <a class="dropdown-item" class="MIE" href="#">Miercoles</a>
+          <a class="dropdown-item" class="JUE" href="#">Jueves</a>
+          <a class="dropdown-item" class="VIE" href="#">Viernes</a>
+          <a class="dropdown-item" class="SAB" href="#">Sabado</a>
+          <a class="dropdown-item" class="DOM" href="#">Domingo</a>
+          
+        </div>
+      </div>
+
+<div>
+    <form class="form-inline">
+    <input type="text" class="form-control mr-sm-2" placeholder="Alimento" name="NombreAlimento" required>
+    <input type="number" class="form-control mr-sm-2" placeholder="Calorias" name="Calorias" required>
+    <input type="number" class="form-control mr-sm-2" placeholder="Grasas" name="Grasas" required>
+    <input type="number" class="form-control mr-sm-2" placeholder="Carbohidratos" name="Carbohidratos" required>
+    <input type="number" class="form-control mr-sm-2" placeholder="Proteinas" name="Proteinas" required>
+    <button type="submit" class="btn btn-primary">Agregar</button>
     </form>
+</div>
+
+<div>
+    <table class="table ">
+        <thead class="thead-dark">
+            <td>Alimento</td>
+            <td>Calorias</td>
+            <td>Grasas</td>
+            <td>Carbohidratos</td>
+            <td>Proteinas</td>
+            <td>Acciones</td>
+        </thead>
+  
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+<!-------------------Ajax Script------------------->
 <script>
 $('form').on("submit",function(e){
-    e.preventDefault();
-    e.stopImmediatePropagation();
+e.preventDefault();
+e.stopPropagation();
 $.ajax({
 type: 'POST',
 url: 'http://localhost:3000/Alimento',
 data: $('form').serialize(),
 success: function(resp) {
-//console.log(resp);
+    window.location.href = "AltaAlimento.html";
 console.log("alimento agregado con exito");
 },
-error:function(){
-    
+error: function(err){
+console.log(err);
 }
 });
 });
+
+
+ 
+
+
+/////////////////////////////////////////////////GET Alimentos
+$(function(){
+    let TotalCalorias = 0 ;
+    $.ajax({
+        type: "GET",
+        url: "http://localhost:3000/Alimento",
+        success: function(data){
+        data.forEach(Alimentos=>{
+            TotalCalorias+= parseInt(Alimentos.Calorias);
+            console.log(TotalCalorias);
+        $('tbody').append(`<tr>
+        <td>${Alimentos.NombreAlimento}</td>    
+        <td>${Alimentos.Calorias}</td>
+        <td>${Alimentos.Grasas}</td>
+        <td>${Alimentos.Carbohidratos}</td>
+        <td>${Alimentos.Proteinas}</td>
+        <td><a href="#" data-id="${Alimentos._id}"  class="eliminar btn btn-danger">Eliminar </td>
+        </tr>`
+        )
+        });
+        $('tbody').append(`
+        <td>Total</td>
+        <td>${TotalCalorias}</td>
+        <td>0000</td>
+        <td>0000</td>
+        <td>0000</td>
+        <td></td>
+        `);
+        }
+    });
+});
+
+$(document).on('click','.eliminar',function(){
+    var id = $(this).data('id');
+    console.log(id);
+    $.ajax({
+        type: "DELETE",
+        url: `http://localhost:3000/Alimento/${id}`,
+        success: function(data){
+            window.location.href = "AltaAlimento.html";
+        }
+
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </script>
 </body>
 </html>
